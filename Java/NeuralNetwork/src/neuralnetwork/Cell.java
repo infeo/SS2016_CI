@@ -7,10 +7,12 @@ public class Cell {
 	private Integrate inte;
 	private double derivatedval;
 	private double [] weights;
+	private int inlength;
 	
 	public Cell (Transfer t, Integrate i, int dimension ){
 		trans =t;
 		inte = i;
+		inlength = dimension+1;
 		weights = new double [dimension+1];
 		weights [0]=1; //Bias
 		for (int j=0; j< dimension;j++){
@@ -25,5 +27,15 @@ public class Cell {
 		return trans.transit(tmp);
 	}
 	
+	public void fit(int pos, double delta){
+		weights [pos] += delta;
+	}
 	
+	public double getDerivatedVal(){
+		return derivatedval;
+	}
+	
+	public int getInLength(){
+		return inlength;
+	}
 }

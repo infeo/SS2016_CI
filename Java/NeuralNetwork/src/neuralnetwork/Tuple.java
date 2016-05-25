@@ -1,31 +1,29 @@
 package neuralnetwork;
 
-public class Tuple {
+public class Tuple <X,Y> {
 	
-	double [] input;
-	double result;
+	X fst;
+	Y snd;
 	
-	public Tuple (double [] i, double r){
-		input = i;
-		result = r;
+	public Tuple (X f, Y s){
+		fst=f;
+		snd = s;
 	}
 
-	public double[] getInput() {
-		return input;
+	public X getFst() {
+		return fst;
 	}
 
-	public void setInput(double[] input) {
-		this.input = input;
+	public void setFst(X fst) {
+		this.fst = fst;
 	}
 
-	public double getResult() {
-		return result;
+	public Y getSnd() {
+		return snd;
 	}
 
-	public void setResult(double result) {
-		this.result = result;
+	public void setSnd(Y snd) {
+		this.snd = snd;
 	}
-	
-	
 	
 }
