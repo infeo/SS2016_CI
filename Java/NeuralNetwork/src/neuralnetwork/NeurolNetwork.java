@@ -8,6 +8,7 @@ public class NeurolNetwork {
 	
 	private Cell [] [] network;
 	private int [] dimension;
+	private double [] [] delta;
 	//private double [] [] cellderiv;
 	private double [] [] cellout;
 	private double learningrate;
@@ -52,22 +53,104 @@ public class NeurolNetwork {
 	}
 	
 	/*
-	 * TODO: Problem appeared, where should i get the output of the cell before?
+	 * TODO: initialise delta as a Zero-Matrix; 
+	 * TODO:computing delta for hidden units is shitty implemented
+	 * TODO: decide, wether the things schould be saved in one class or split it in others
 	 */
 	private void backPropagate(Tuple <double [], double []> t){
 		double [] aim = t.getSnd();
-		double delta;
 		double grad;
+		double tmp;
 		int last = dimension.length-1;
 		Cell curr;
+		//change the weights of the output layer
 		for(int i=0; i< dimension [last];i++){
 			curr = network[last][i];
-			delta = curr.getDerivatedVal()*(aim[i] - cellout[last][i]);
+			delta [last] [i]= curr.getDerivatedVal()*(aim[i] - cellout[last][i]);
 			for(int j=0;j<curr.getInLength();j++){
-				grad = -learningrate*delta *cellout[cellout.length-1][i];
+				grad = -learningrate*delta [last] [i]*cellout[cellout.length-1][i];
 				curr.fit(j, grad);
 			}
 		}
+		
+		//change the weights of the hidden layers
+		//select layer
+		for(int i =dimension.length-1; i>0; i--){
+			//select cell
+			for(int j = 0; j<dimension[i];j++){
+				curr = network [i] [j];
+				tmp=0;
+				//compute delta
+				for (int k=0; k<dimension[i+1];k++) tmp +=delta[i+1][k]* ((network [i+1][k].getWeights()) [j]);
+				delta [i][j]= curr.getDerivatedVal()*tmp;
+				//select weightcomponent
+				for (int l =0; l<curr.getInLength(); l++ ){
+					grad = -learningrate*delta[i][j]*cellout[i-1][l];
+					curr.fit(l, grad);
+				}
+			}
+		}
+		
+		//change the weights of the input layer
+		for(int j = 0; j<dimension[0];j++){
+			curr = network [0] [j];
+			tmp=0;
+			//compute delta
+			for (int k=0; k<dimension[1];k++) tmp +=delta[1][k]* ((network [1][k].getWeights()) [j]);
+			delta [0][j]= curr.getDerivatedVal()*tmp;
+			//select weightcomponent
+			for (int l =0; l<curr.getInLength(); l++ ){
+				grad = -learningrate*delta[0][j]*t.getFst()[l];
+				curr.fit(l, grad);
+			}
+		}
+	}
+	
+	
+	/*
+	 * TODO: Check if the division is no integer division!
+	 */
+	public double measureMeanError(Collection <Tuple <double [],double []>> testdata){
+		double errsum=0;
+		int errcount=0;
+		Iterator <Tuple <double [], double []>> it = testdata.iterator();
+		Tuple <double [], double []> elem;
+		while (it.hasNext()){
+			elem = it.next();
+			errcount++;
+			errsum+=measureError(elem);
+		}
+		
+		return errsum / (2* (double) errcount);
+	}
+	
+	
+	private double measureError(Tuple <double [],double []> t){
+		propagate(t.getFst());
+		int last = dimension.length-1;
+		double err = 0;
+		double [] should = t.getSnd();
+		for(int i=0; i<dimension[last];i++){
+			err += Math.pow((cellout[last][i] - should[i]),2);
+		}
+		return err;
+	}
+	
+	
+	public void stepByStep( Collection <Tuple <double [],double []>> testdata){
+		Iterator <Tuple <double [], double []>> it = testdata.iterator();
+		Tuple <double [], double []> elem;
+		double err;
+		while (it.hasNext()){
+			elem = it.next();
+			err= measureError(elem);
+			
+			//notify or update graph with error
+		}
+	}
+	
+	
+	public void showQuality(){
 		
 	}
 	

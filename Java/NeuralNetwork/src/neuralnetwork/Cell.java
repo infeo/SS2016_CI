@@ -27,8 +27,8 @@ public class Cell {
 		return trans.transit(tmp);
 	}
 	
-	public void fit(int pos, double delta){
-		weights [pos] += delta;
+	public void fit(int pos, double val){
+		weights [pos] += val;
 	}
 	
 	public double getDerivatedVal(){
@@ -37,5 +37,9 @@ public class Cell {
 	
 	public int getInLength(){
 		return inlength;
+	}
+	
+	public double [] getWeights(){
+		return weights;
 	}
 }
