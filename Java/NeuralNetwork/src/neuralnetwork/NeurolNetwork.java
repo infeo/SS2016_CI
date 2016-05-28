@@ -138,19 +138,20 @@ public class NeurolNetwork {
 	
 	
 	public void stepByStep( Collection <Tuple <double [],double []>> testdata){
+		int time =0;
 		Iterator <Tuple <double [], double []>> it = testdata.iterator();
 		Tuple <double [], double []> elem;
 		double err;
 		while (it.hasNext()){
 			elem = it.next();
 			err= measureError(elem);
-			
 			//notify or update graph with error
+			time++;
 		}
 	}
 	
 	
-	public void showQuality(){
+	public void showQuality(Collection <Tuple <double [],double []>> testdata){
 		
 	}
 	
