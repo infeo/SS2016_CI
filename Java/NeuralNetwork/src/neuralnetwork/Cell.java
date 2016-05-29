@@ -9,6 +9,10 @@ public class Cell {
 	private double [] weights;
 	private int inlength;
 	
+	
+	/*
+	 * TODO: program the weigths generator
+	 */
 	public Cell (Transfer t, Integrate i, int dimension ){
 		trans =t;
 		inte = i;

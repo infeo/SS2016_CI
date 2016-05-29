@@ -22,7 +22,7 @@ public class NeurolNetwork {
 		network = new Cell [size.length] [tmp];
 		for (int i =0; i< size.length; i++){
 			for (int j =0; j<size[i];j++){
-				network [i] [j] = new Cell (t,in,{10,1});
+				network [i] [j] = new Cell (t,in,10);
 			}
 		}
 	}
