@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Arrays;
 
-public class NeurolNetwork {
+public class NeuralNetwork {
 	
 	private Cell [] [] network;
 	private int [] dimension;
@@ -12,18 +12,22 @@ public class NeurolNetwork {
 	//private double [] [] cellderiv;
 	private double [] [] cellout;
 	private double learningrate;
-	private double output;
+	private int maxdepth;
 	
-	public void NeuralNetwork( int [] size, Transfer t,Integrate in){
-		int tmp=0;
-		for(int i=0; i<size.length; i++){
-			if( tmp < size[i]) tmp = size[i];
-		}
-		network = new Cell [size.length] [tmp];
-		for (int i =0; i< size.length; i++){
-			for (int j =0; j<size[i];j++){
-				network [i] [j] = new Cell (t,in,10);
-			}
+	
+	public NeuralNetwork(int [] dim, int depth, double rate){
+		int layers = dim.length;
+		network = new Cell [layers][depth];
+		cellout = new double [layers] [depth];
+		delta = new double [layers] [depth];
+		dimension = Arrays.copyOf(dim, layers);
+		learningrate = rate;
+		maxdepth=depth;
+	}
+	
+	public void setLayer(int dim, int layer, Integrate i, Transfer t){
+		for(int k =0; k <dimension [layer];k++){
+			network [layer][k]= new Cell(t,i,dim);
 		}
 	}
 	
@@ -32,7 +36,7 @@ public class NeurolNetwork {
 		Tuple <double [], double []> elem;
 		while (it.hasNext()){
 			elem = it.next();
-			propagate( (double []) elem.getFst());
+			propagate( elem.getFst());
 			backPropagate (elem);
 		}
 		
@@ -41,8 +45,8 @@ public class NeurolNetwork {
 	/*
 	 * TODO: is it wise to return an array? what is with the bias unit?
 	 */
-	private void propagate(double [] realinput){
-		double [] cellin = realinput;
+	public void propagate(double [] realinput){
+		double [] cellin = Arrays.copyOf(realinput, maxdepth);
 		//double [] cellout = new double [network [0].length];
 		for (int i = 0; i< network.length; i++){
 			for (int j= 0; j < dimension[i]; j++){
@@ -68,7 +72,7 @@ public class NeurolNetwork {
 			curr = network[last][i];
 			delta [last] [i]= curr.getDerivatedVal()*(aim[i] - cellout[last][i]);
 			for(int j=0;j<curr.getInLength();j++){
-				grad = -learningrate*delta [last] [i]*cellout[cellout.length-1][i];
+				grad = -learningrate*delta [last] [i]*cellout[last][i];
 				curr.fit(j, grad);
 			}
 		}
@@ -107,9 +111,6 @@ public class NeurolNetwork {
 	}
 	
 	
-	/*
-	 * TODO: Check if the division is no integer division!
-	 */
 	public double measureMeanError(Collection <Tuple <double [],double []>> testdata){
 		double errsum=0;
 		int errcount=0;
@@ -136,7 +137,9 @@ public class NeurolNetwork {
 		return err;
 	}
 	
-	
+	/*
+	 * TODO: is this function needed?
+	 */
 	public void stepByStep( Collection <Tuple <double [],double []>> testdata){
 		int time =0;
 		Iterator <Tuple <double [], double []>> it = testdata.iterator();
@@ -150,9 +153,10 @@ public class NeurolNetwork {
 		}
 	}
 	
-	
-	public void showQuality(Collection <Tuple <double [],double []>> testdata){
-		
+	public double [] getResult(){
+		int tmp = cellout.length-1;
+		double [] res = Arrays.copyOf(cellout[tmp],dimension[tmp]);
+		return res;
 	}
 	
 }
