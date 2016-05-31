@@ -93,7 +93,7 @@ public class Running {
         
         //generate Network
         int [] dim = {10,1};
-        neuron = new NeuralNetwork(dim,10,0.000001);
+        neuron = new NeuralNetwork(dim,10,0.0001);
         Transfer t = new Fermi();
         Transfer t2 = new Linear();
         Integrate inte = new Sum();
@@ -106,21 +106,26 @@ public class Running {
         //Show error
         System.out.println(neuron.measureMeanError(testdata));
         
+        //Currently the singleTraining methods are not working
         /*
         //train the output layer
-        trainLayer(error1, testdata, 1);
-        System.out.println(neuron.measureMeanError(testdata));
-
+        for(int i=0; i<20;i++){
+        	trainLayer( testdata, 1);
+        	error1.add((double) i, neuron.measureMeanError(testdata));
+        }
         
         //train the hidden layer
-        trainLayer(error2,testdata,0);
-        System.out.println(neuron.measureMeanError(testdata));
+        for(int i=0; i<20;i++){
+        	trainLayer( testdata, 0);
+        	error2.add((double) i, neuron.measureMeanError(testdata));
+        }
         */
         
         //for testing, train the whole net
-        neuron.learn(testdata);
-        System.out.println(neuron.measureMeanError(testdata));
-        
+        for(int i=0;i<10000;i++){
+        	neuron.learn(testdata);
+        	error1.add((double) i, neuron.measureMeanError(testdata));
+        }
         //show the trained network 
         compare(neuralnet,testdata);
         
@@ -139,16 +144,13 @@ public class Running {
         }
 	}
 	
-	public static void trainLayer(XYSeries chart, Collection <Tuple <double [],double []>> testdata, int layer){
+	public static void trainLayer(Collection <Tuple <double [],double []>> testdata, int layer){
 		Iterator <Tuple <double [], double []>> it = testdata.iterator();
         Tuple <double[],double []> elem;
-        double time =0;
         while(it.hasNext()){
         	elem = it.next();
-        	double err =neuron.measureError(elem);
         	neuron.stepBackPropagate(elem,layer);
-        	chart.add(time,err);
-        	time++;
+
         }
 	}
 
