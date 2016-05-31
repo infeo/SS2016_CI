@@ -9,7 +9,7 @@ public class Linear implements Transfer {
 
 	@Override
 	public double derivative(double val) {
-		return 0;
+		return 1;
 	}
 
 }

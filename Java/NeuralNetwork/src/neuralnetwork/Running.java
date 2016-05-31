@@ -94,7 +94,7 @@ public class Running {
         
         //generate Network
         int [] dim = {10,1};
-        neuron = new NeuralNetwork(dim,10,1);
+        neuron = new NeuralNetwork(dim,10,0.000001);
         Transfer t = new Fermi();
         Transfer t2 = new Linear();
         Integrate inte = new Sum();
@@ -106,13 +106,13 @@ public class Running {
         
         //Show error
         System.out.println(neuron.measureMeanError(testdata));
-        /*
+        
         //train the output layer
         trainLayer(error1, testdata, 1);
         
         //train the hidden layer
         trainLayer(error2,testdata,0);
-        */
+        
         
         //for testing, train the whole net
         neuron.learn(testdata);
