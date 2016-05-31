@@ -41,10 +41,7 @@ public class NeuralNetwork {
 		}
 		
 	}
-	
-	/*
-	 * TODO: is it wise to return an array? what is with the bias unit?
-	 */
+
 	public void propagate(double [] realinput){
 		double [] cellin = Arrays.copyOf(realinput, maxdepth);
 		//double [] cellout = new double [network [0].length];
@@ -59,10 +56,11 @@ public class NeuralNetwork {
 	/*
 	 * TODO: initialise delta as a Zero-Matrix; 
 	 * TODO:computing delta for hidden units is shitty implemented
-	 * TODO: decide, wether the things schould be saved in one class or split it in others
+	 * TODO: decide, wether the things should be saved in one class or split it in others
 	 */
 	private void backPropagate(Tuple <double [], double []> t){
-		double [] aim = t.getSnd();
+		double [] aim = Arrays.copyOf(t.getSnd(),t.getSnd().length);
+		double [] start = Arrays.copyOf(t.getFst(), t.getFst().length);
 		double grad;
 		double tmp;
 		int last = dimension.length-1;
@@ -71,9 +69,14 @@ public class NeuralNetwork {
 		for(int i=0; i< dimension [last];i++){
 			curr = network[last][i];
 			delta [last] [i]= curr.getDerivatedVal()*(aim[i] - cellout[last][i]);
+			
+			//fit the bias
+			grad = -learningrate*delta [last] [i];
+			curr.fit(0, grad);
+			//fit the other weightcomponents
 			for(int j=0;j<curr.getInLength();j++){
-				grad = -learningrate*delta [last] [i]*cellout[last][i];
-				curr.fit(j, grad);
+				grad = -learningrate*delta [last] [i]*cellout[last-1][j];
+				curr.fit(j+1, grad);
 			}
 		}
 		
@@ -87,10 +90,13 @@ public class NeuralNetwork {
 				//compute delta
 				for (int k=0; k<dimension[i+1];k++) tmp +=delta[i+1][k]* ((network [i+1][k].getWeights()) [j]);
 				delta [i][j]= curr.getDerivatedVal()*tmp;
-				//select weightcomponent
+				//fit the bias
+				grad = -learningrate*delta [i] [j];
+				curr.fit(0, grad);
+				//fit the other weightcomponents
 				for (int l =0; l<curr.getInLength(); l++ ){
 					grad = -learningrate*delta[i][j]*cellout[i-1][l];
-					curr.fit(l, grad);
+					curr.fit(l+1, grad);
 				}
 			}
 		}
@@ -102,10 +108,13 @@ public class NeuralNetwork {
 			//compute delta
 			for (int k=0; k<dimension[1];k++) tmp +=delta[1][k]* ((network [1][k].getWeights()) [j]);
 			delta [0][j]= curr.getDerivatedVal()*tmp;
-			//select weightcomponent
+			//fit the bias
+			grad = -learningrate*delta [0] [j];
+			curr.fit(0, grad);
+			//fit the other weightcomponents
 			for (int l =0; l<curr.getInLength(); l++ ){
-				grad = -learningrate*delta[0][j]*t.getFst()[l];
-				curr.fit(l, grad);
+				grad = -learningrate*delta[0][j]*start[l];
+				curr.fit(l+1, grad);
 			}
 		}
 	}
@@ -117,11 +126,17 @@ public class NeuralNetwork {
 		double tmp;
 		if (layer == dimension.length-1){
 			for(int i=0; i< dimension [layer];i++){
+				//select cell
 				curr = network[layer][i];
+				//compute delta
 				delta [layer] [i]= curr.getDerivatedVal()*(aim[i] - cellout[layer][i]);
+				//bias
+				grad = -learningrate*delta [layer] [i];
+				curr.fit(0, grad);
+				//rest
 				for(int j=0;j<curr.getInLength();j++){
-					grad = -learningrate*delta [layer] [i]*cellout[layer][i];
-					curr.fit(j, grad);
+					grad = -learningrate*delta [layer] [i]*cellout[layer-1][j];
+					curr.fit(j+1, grad);
 				}
 			}
 		}
@@ -132,10 +147,12 @@ public class NeuralNetwork {
 				//compute delta
 				for (int k=0; k<dimension[1];k++) tmp +=delta[1][k]* ((network [1][k].getWeights()) [j]);
 				delta [0][j]= curr.getDerivatedVal()*tmp;
+				grad = -learningrate*delta [0] [j];
+				curr.fit(0, grad);
 				//select weightcomponent
 				for (int l =0; l<curr.getInLength(); l++ ){
 					grad = -learningrate*delta[0][j]*t.getFst()[l];
-					curr.fit(l, grad);
+					curr.fit(l+1, grad);
 				}
 			}
 		}
@@ -146,10 +163,13 @@ public class NeuralNetwork {
 				//compute delta
 				for (int k=0; k<dimension[layer+1];k++) tmp +=delta[layer+1][k]* ((network [layer+1][k].getWeights()) [j]);
 				delta [layer][j]= curr.getDerivatedVal()*tmp;
+				//bias
+				grad = -learningrate*delta [layer] [j];
+				curr.fit(0, grad);
 				//select weightcomponent
 				for (int l =0; l<curr.getInLength(); l++ ){
 					grad = -learningrate*delta[layer][j]*cellout[layer-1][l];
-					curr.fit(l, grad);
+					curr.fit(l+1, grad);
 				}
 			}
 		}
@@ -178,7 +198,7 @@ public class NeuralNetwork {
 		double err = 0;
 		double [] should = t.getSnd();
 		for(int i=0; i<dimension[last];i++){
-			err += Math.pow((cellout[last][i] - should[i]),2);
+			err += Math.pow((should[i] - cellout[last][i]),2);
 		}
 		return err;
 	}

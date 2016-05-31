@@ -37,7 +37,7 @@ public class Running {
 		
         NumberAxis x1 = new NumberAxis("x");
         NumberAxis y1 = new NumberAxis("y");
-		ApplicationFrame frame1 = new ApplicationFrame("Fehlerentwicklung");
+		ApplicationFrame frame1 = new ApplicationFrame("Vergleich von Netzwerk mit Ergebnis");
         XYSplineRenderer spline = new XYSplineRenderer();
         //System.out.println("spline precision = "+(spline.getPrecision()));
         spline.setPrecision(10);
@@ -51,7 +51,7 @@ public class Running {
         
         NumberAxis x2 = new NumberAxis("x");
         NumberAxis y2 = new NumberAxis("y");
-        ApplicationFrame frame2 = new ApplicationFrame("Punkte mit Linien verbunden (XYPlot)");
+        ApplicationFrame frame2 = new ApplicationFrame("Fehlerentwicklung");
         XYLineAndShapeRenderer line = new XYLineAndShapeRenderer();
         XYPlot plot2 = new XYPlot(errset,x2,y2, line);
         JFreeChart chart2 = new JFreeChart(plot2);
@@ -60,9 +60,10 @@ public class Running {
         frame2.pack();
         frame2.setVisible(true);
         
+        /*
         NumberAxis x3 = new NumberAxis("x");
         NumberAxis y3 = new NumberAxis("y");
-		ApplicationFrame frame3 = new ApplicationFrame("Fehlerentwicklung");
+		ApplicationFrame frame3 = new ApplicationFrame("Vergleich nach Lernen");
         XYSplineRenderer spline2 = new XYSplineRenderer();
         //System.out.println("spline precision = "+(spline.getPrecision()));
         spline.setPrecision(10);
@@ -72,14 +73,13 @@ public class Running {
         frame3.setContentPane(chartPanel3);
         frame3.pack();
         frame3.setVisible(true);
-        
+        */
         
         //generate testdata
         Collection <Tuple <double [],double []>> testdata = new ArrayList<Tuple <double [],double []>>();
         double x,fx;
         double [] in = new double[1];
         
-        Tuple <double[],double []> elem;
         for(int i=0; i<1001; i++){
         	x = ThreadLocalRandom.current().nextDouble(-10,10);
         	fx = Math.cos(x/2)+Math.sin(5/(Math.abs(x)+0.2))-0.1*x;
@@ -88,7 +88,6 @@ public class Running {
         	double [] tmp_out =new double[1];
         	tmp_out [0]=fx;
         	actfunc.add(x, fx);
-        	//elem = new Tuple<double[],double[]>(in,out);
         	testdata.add(new Tuple<double[],double[]>(tmp_in,tmp_out));
         }
         
@@ -107,18 +106,25 @@ public class Running {
         //Show error
         System.out.println(neuron.measureMeanError(testdata));
         
+        /*
         //train the output layer
         trainLayer(error1, testdata, 1);
+        System.out.println(neuron.measureMeanError(testdata));
+
         
         //train the hidden layer
         trainLayer(error2,testdata,0);
-        
+        System.out.println(neuron.measureMeanError(testdata));
+        */
         
         //for testing, train the whole net
         neuron.learn(testdata);
+        System.out.println(neuron.measureMeanError(testdata));
         
         //show the trained network 
         compare(neuralnet,testdata);
+        
+        System.out.println("End");
 	}
 	
 	public static void compare(XYSeries chart, Collection <Tuple <double [],double []>> testdata){
