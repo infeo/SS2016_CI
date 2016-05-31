@@ -79,7 +79,7 @@ public class NeuralNetwork {
 		
 		//change the weights of the hidden layers
 		//select layer
-		for(int i =dimension.length-1; i>0; i--){
+		for(int i =dimension.length-2; i>0; i--){
 			//select cell
 			for(int j = 0; j<dimension[i];j++){
 				curr = network [i] [j];
@@ -110,6 +110,52 @@ public class NeuralNetwork {
 		}
 	}
 	
+	public void stepBackPropagate(Tuple <double [], double []> t, int layer){
+		double [] aim = t.getSnd();
+		Cell curr;
+		double grad;
+		double tmp;
+		if (layer == dimension.length-1){
+			for(int i=0; i< dimension [layer];i++){
+				curr = network[layer][i];
+				delta [layer] [i]= curr.getDerivatedVal()*(aim[i] - cellout[layer][i]);
+				for(int j=0;j<curr.getInLength();j++){
+					grad = -learningrate*delta [layer] [i]*cellout[layer][i];
+					curr.fit(j, grad);
+				}
+			}
+		}
+		else if (layer == 0){
+			for(int j = 0; j<dimension[0];j++){
+				curr = network [0] [j];
+				tmp=0;
+				//compute delta
+				for (int k=0; k<dimension[1];k++) tmp +=delta[1][k]* ((network [1][k].getWeights()) [j]);
+				delta [0][j]= curr.getDerivatedVal()*tmp;
+				//select weightcomponent
+				for (int l =0; l<curr.getInLength(); l++ ){
+					grad = -learningrate*delta[0][j]*t.getFst()[l];
+					curr.fit(l, grad);
+				}
+			}
+		}
+		else {
+			for(int j = 0; j<dimension[layer];j++){
+				curr = network [layer] [j];
+				tmp=0;
+				//compute delta
+				for (int k=0; k<dimension[layer+1];k++) tmp +=delta[layer+1][k]* ((network [layer+1][k].getWeights()) [j]);
+				delta [layer][j]= curr.getDerivatedVal()*tmp;
+				//select weightcomponent
+				for (int l =0; l<curr.getInLength(); l++ ){
+					grad = -learningrate*delta[layer][j]*cellout[layer-1][l];
+					curr.fit(l, grad);
+				}
+			}
+		}
+		
+	}
+	
 	
 	public double measureMeanError(Collection <Tuple <double [],double []>> testdata){
 		double errsum=0;
@@ -126,7 +172,7 @@ public class NeuralNetwork {
 	}
 	
 	
-	private double measureError(Tuple <double [],double []> t){
+	public double measureError(Tuple <double [],double []> t){
 		propagate(t.getFst());
 		int last = dimension.length-1;
 		double err = 0;
@@ -135,22 +181,6 @@ public class NeuralNetwork {
 			err += Math.pow((cellout[last][i] - should[i]),2);
 		}
 		return err;
-	}
-	
-	/*
-	 * TODO: is this function needed?
-	 */
-	public void stepByStep( Collection <Tuple <double [],double []>> testdata){
-		int time =0;
-		Iterator <Tuple <double [], double []>> it = testdata.iterator();
-		Tuple <double [], double []> elem;
-		double err;
-		while (it.hasNext()){
-			elem = it.next();
-			err= measureError(elem);
-			//notify or update graph with error
-			time++;
-		}
 	}
 	
 	public double [] getResult(){
