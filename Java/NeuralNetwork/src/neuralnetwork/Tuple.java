@@ -1,12 +1,12 @@
 package neuralnetwork;
 
-public class Tuple <X,Y> {
-	
+public class Tuple<X, Y> {
+
 	X fst;
 	Y snd;
-	
-	public Tuple (X f, Y s){
-		fst=f;
+
+	public Tuple(X f, Y s) {
+		fst = f;
 		snd = s;
 	}
 
@@ -25,5 +25,5 @@ public class Tuple <X,Y> {
 	public void setSnd(Y snd) {
 		this.snd = snd;
 	}
-	
+
 }

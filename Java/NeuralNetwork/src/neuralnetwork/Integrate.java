@@ -1,5 +1,5 @@
 package neuralnetwork;
 
 public interface Integrate {
-	public double integrate(double [] val, double [] weights);
+	public double integrate(double[] val, double[] weights);
 }
