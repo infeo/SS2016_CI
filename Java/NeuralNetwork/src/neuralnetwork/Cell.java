@@ -2,6 +2,9 @@ package neuralnetwork;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import basics.Integrate;
+import basics.Transfer;
+
 public class Cell {
 	
 	private Transfer trans;

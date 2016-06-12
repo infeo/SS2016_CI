@@ -2,6 +2,10 @@ package neuralnetwork;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import basics.Integrate;
+import basics.Transfer;
+
 import java.util.Arrays;
 
 public class NeuralNetwork {

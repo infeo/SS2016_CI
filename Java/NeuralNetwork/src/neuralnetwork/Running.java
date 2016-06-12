@@ -9,6 +9,11 @@ import java.util.Iterator;
 
 import org.jfree.chart.*;
 import org.jfree.ui.ApplicationFrame;
+
+import basics.Integrate;
+import basics.Linear;
+import basics.Transfer;
+
 import org.jfree.data.xy.*;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;

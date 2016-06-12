@@ -1,9 +1,12 @@
 package neuralnetwork;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Arrays;
+
+import basics.Integrate;
+import basics.Transfer;
 
 
 public class RecurrentNN {

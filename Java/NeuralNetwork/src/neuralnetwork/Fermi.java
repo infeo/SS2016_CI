@@ -2,6 +2,8 @@ package neuralnetwork;
 
 import java.lang.Math;
 
+import basics.Transfer;
+
 public class Fermi implements Transfer {
 
 	public double transit(double val) {

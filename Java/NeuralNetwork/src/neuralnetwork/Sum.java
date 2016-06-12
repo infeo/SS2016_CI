@@ -1,5 +1,7 @@
 package neuralnetwork;
 
+import basics.Integrate;
+
 public class Sum implements Integrate {
 
 	public double integrate(double[] val, double[] weights) {
