@@ -8,9 +8,9 @@ import basics.Transfer;
 
 public class SOMNeuron extends AbstractNeuron{
 	
-	public SOMNeuron(int dim, double [] cent, Integrate inte, Transfer trans){
+	public SOMNeuron(int dim, double [] center, Integrate inte, Transfer trans){
 		this.setDimInput(dim);
-		weights = (Arrays.copyOf(cent, dim));
+		weights = (Arrays.copyOf(center, dim));
 		this.setInte(inte);
 		this.setTrans(trans);
 	}

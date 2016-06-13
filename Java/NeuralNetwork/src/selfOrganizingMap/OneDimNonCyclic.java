@@ -2,7 +2,11 @@ package selfOrganizingMap;
 
 public class OneDimNonCyclic implements AdjacencyFunction {
 
-	@Override
+	/*
+	 * Computes the Neighbours. Convention: if the method returns (-1), there is no neighbour 
+	 * (non-Javadoc)
+	 * @see selfOrganizingMap.AdjacencyFunction#computeNeighbours(int, int)
+	 */
 	public int[] computeNeighbours(int i,int max) {
 		int [] arr = new int [2];
 		if(max > i ){
