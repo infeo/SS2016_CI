@@ -2,10 +2,11 @@ package selfOrganizingMap;
 
 import java.util.Arrays;
 
-import basics.*;
+import basics.AbstractNeuron;
+import basics.Integrate;
+import basics.Transfer;
 
 public class SOMNeuron extends AbstractNeuron{
-	
 	
 	public SOMNeuron(int dim, double [] cent, Integrate inte, Transfer trans){
 		this.setDimInput(dim);
