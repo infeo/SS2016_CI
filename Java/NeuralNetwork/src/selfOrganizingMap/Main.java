@@ -71,10 +71,10 @@ public class Main {
 		
 		//Generate Data
 			// initialise collection
-		Collection <double []> data = new ArrayList<double []>(2000);
+		Collection <double []> data = new ArrayList<double []>(2001);
 			// find a way to compute the normal distribution
 			//add forall u the the datapoints to the collection
-		for(int u=0; u<2000;u++){
+		for(int u=0; u<2001;u++){
 			double fst = 2* (1+Math.sqrt(u))*Math.sin(u)+gauss(0,0.01*u);
 			double snd = -(1+Math.sqrt(u))*Math.cos(u)+gauss(0,0.05*u);
 			double [] tmp = {fst,snd};
@@ -94,7 +94,7 @@ public class Main {
 		Random rand = new Random();
 		int tmp;
 		for(int i =0; i<size;i++){
-			tmp = rand.nextInt(2000);
+			tmp = rand.nextInt(2001);
 			double [] cent = ((ArrayList <double []>) data).get(tmp);
 			if(! centers.add(cent) ){
 				i--;
@@ -104,7 +104,16 @@ public class Main {
 		SOM net = new SOM(2,size,new EuclidsDistance(),new OneDimNonCyclic(), centers);
 		
 		//show Winner
-		
+		for(int i =1; i<20; i++){
+			double [] curr = ((ArrayList<double[]>) data).get(i*100);
+			//computeWinner();
+			try{
+				Thread.sleep(2000);
+			}
+			catch (InterruptedException e){
+				System.err.println("Thread Suspended:" + e.getMessage());
+			}
+		}
 		//train SOM
 		
 		//show training

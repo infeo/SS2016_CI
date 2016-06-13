@@ -56,5 +56,21 @@ public class SOM {
 		}
 	}
 	
+	public int computeWinner(double [] inp){
+		double minDist=Double.MAX_VALUE;
+		double currDist;
+		int best=-1;
+		for(int i=0; i<neurons.length;i++){
+			currDist = neurons[i].computeOutput(inp);
+			if(minDist > currDist){
+				minDist = currDist;
+				best = i;
+			};
+		}
+		return best;
+	}
 	
+	public int[] getNeighbours(int i){
+		return adjacency[i];
+	}
 }
