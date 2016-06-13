@@ -1,5 +1,6 @@
 package selfOrganizingMap;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -9,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -26,6 +28,8 @@ public class Main {
 			//make data Series
 		XYSeries dataShow = new XYSeries("Datenpunkte");
 		XYSeries netShow = new XYSeries("SOM");
+		XYSeries winInpShow = new XYSeries("Inputpunkt");
+		XYSeries winNeuShow	= new XYSeries("Winner-Neuron");
 		
 			//collect the series in collections
 		XYSeriesCollection colldata = new XYSeriesCollection();
@@ -34,6 +38,10 @@ public class Main {
 		XYSeriesCollection collnet = new XYSeriesCollection();
 		collnet.addSeries(netShow);
 		
+		XYSeriesCollection collwin = new XYSeriesCollection();
+		collwin.addSeries(winInpShow);
+		collwin.addSeries(winNeuShow);
+
 			//make charts
 				// initialise the axes
 		NumberAxis x1 = new NumberAxis("x");
@@ -43,20 +51,34 @@ public class Main {
 		
 				//select the render methods
 		XYDotRenderer dotrender = new XYDotRenderer();
-		XYLineAndShapeRenderer linerender = new XYLineAndShapeRenderer();
-		linerender.setBaseShapesVisible(false);
 		dotrender.setDotHeight(2);
 		dotrender.setDotWidth(2);
+		XYDotRenderer dotrender2 = new XYDotRenderer();
+		dotrender2.setDotHeight(4);
+		dotrender2.setDotWidth(4);
+		XYLineAndShapeRenderer linerender = new XYLineAndShapeRenderer();
+		linerender.setBaseShapesVisible(false);
+
 				//make the plots
 		XYPlot plot = new XYPlot();
+				//plot for the data
 		plot.setDataset(0,colldata);
-		plot.setDataset(1, collnet);
 		plot.setDomainAxis(0, x1);
-		plot.setDomainAxis(1, x2);
 		plot.setRangeAxis(0, y1);
-		plot.setRangeAxis(1, y2);
 		plot.setRenderer(0, dotrender);
+				//plot for the SOM
+		plot.setDataset(1, collnet);
+		//plot.setDomainAxis(1, x2);
+		//plot.setRangeAxis(1, y2);
 		plot.setRenderer(1,linerender);
+				//the plot for the winnerneurons
+		plot.setDataset(2, collwin);
+		plot.setRenderer(2,dotrender2);
+		
+		plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+		plot.setBackgroundPaint(new Color(220,220,225));
+		
+		
 				//make the charts
 		JFreeChart chart1 = new JFreeChart(plot);
 				//make the windows
@@ -104,15 +126,21 @@ public class Main {
 		SOM net = new SOM(2,size,new EuclidsDistance(),new OneDimNonCyclic(), centers);
 		
 		//show Winner
+		int win;
 		for(int i =1; i<20; i++){
-			double [] curr = ((ArrayList<double[]>) data).get(i*100);
-			//computeWinner();
+			double [] point = ((ArrayList<double[]>) data).get(i*100);
+			win = net.computeWinner(point);
+			double [] neuron = net.getCenter(win);
+			winInpShow.add(point[0],point[1]);
+			winNeuShow.add(neuron [0], neuron [1]);
 			try{
-				Thread.sleep(2000);
+				Thread.sleep(1250);
 			}
 			catch (InterruptedException e){
 				System.err.println("Thread Suspended:" + e.getMessage());
 			}
+			winInpShow.clear();
+			winNeuShow.clear();
 		}
 		//train SOM
 		

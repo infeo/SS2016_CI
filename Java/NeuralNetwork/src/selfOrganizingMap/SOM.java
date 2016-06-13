@@ -69,6 +69,9 @@ public class SOM {
 		}
 		return best;
 	}
+	public double[] getCenter(int i){
+		return neurons[i].getWeights();
+	}
 	
 	public int[] getNeighbours(int i){
 		return adjacency[i];

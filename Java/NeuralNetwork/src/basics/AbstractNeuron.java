@@ -36,4 +36,9 @@ public abstract class AbstractNeuron {
 		this.inte = inte;
 	}
 	
+	public void fitWeights(double [] fit){
+		for(int i=0; i<weights.length; i++){
+			weights[i]+=fit[i];
+		}
+	}
 }
