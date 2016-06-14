@@ -11,26 +11,25 @@ public class SOM {
 	
 	private int dimInput;
 	private int dimSOM;
-	private int [] [] adjacency; 
 	private SOMNeuron [] neurons;
 	private int numNeurons;
 	private double learningrate;
+	private TopologyFunction topo;
 	
 	/*
 	 * unfinished
 	 */
-	public SOM(int dimIn, int numN, double learn, Integrate inte, AdjacencyFunction func){
+	public SOM(int dimIn, int numN, double learn, Integrate inte, TopologyFunction func){
 		dimInput = dimIn;
 		dimSOM = func.getDimension();
 		numNeurons = numN;
 		learningrate =learn;
+		topo = func;
 		//init SOMNeurons
 		neurons = new SOMNeuron [numN];
-		adjacency = new int [numN] [dimSOM];
 		for(int i=0; i<numN;i++){
 			//double rand [] = ThreadLocalRandom.current().
 			//neurons[i] = new SOMNeuron(dimIn,/*random center*/,inte,new Linear());
-			adjacency [i] = func.computeNeighbours(i,numN);
 		}
 	}
 	
@@ -40,23 +39,22 @@ public class SOM {
 	 * @param numN Number of Neurons ins the SOM
 	 * @param learn LearningRate of the net (currently a constant)
 	 * @param inte The Distance function/norm ||.|| (how similar are the input vector and the center of the current neuron) 
-	 * @param func The Adjacencey Function-Object, which defines the SOM-Dimension, the count of Neighbours of each neuron and compute those neighbours
+	 * @param func The Topology Function-Object, which defines the SOM-Dimension and can compute the distance between two neurons
 	 * @param centers The predefined centers of the neurons. Note, that the iterators of the collections defines the order of Neurons in the Inputspace
 	 */
-	public SOM(int dimIn, int numN, double learn, Integrate inte, AdjacencyFunction func, Collection<double []> centers ){
+	public SOM(int dimIn, int numN, double learn, Integrate inte, TopologyFunction func, Collection<double []> centers ){
 		dimInput = dimIn;
 		dimSOM = func.getDimension();
 		numNeurons = numN;
 		learningrate =learn;
+		topo = func;
 		//init SOMNeurons
 		neurons = new SOMNeuron [numN];
-		adjacency = new int [numN] [dimSOM];
 		Iterator<double[]> it = centers.iterator();
 		double [] elem;
 		for(int i=0; i<numN;i++){
 			elem = it.next();
 			neurons[i] = new SOMNeuron(dimIn,elem,inte,new Linear());
-			adjacency [i] = func.computeNeighbours(i,numN);
 		}
 	}
 	
@@ -78,10 +76,6 @@ public class SOM {
 		return neurons[i].getWeights();
 	}
 	
-	public int[] getNeighbours(int i){
-		return adjacency[i];
-	}
-	
 	public void learn(Collection <double []> data){
 		Iterator<double[]> it = data.iterator();
 		int winner;
@@ -92,18 +86,21 @@ public class SOM {
 				double [] fit = new double [elem.length];
 				double [] cent = neurons[i].getWeights();
 				for(int j=0; j<elem.length;j++){
-					fit[j]=learningrate*(elem[j]-cent[j])*quickNDirty(winner,i);
+					fit[j]=learningrate*(elem[j]-cent[j])*quickNDirty(winner,i,0);
 				}
 				neurons[i].fitWeights(fit);
 			}
 		}
 	}
 	
-	private double quickNDirty(int win, int curr){
-		if(curr==win) return 1;
-		for(Integer i : adjacency[curr]){
-			if(i==win) return 1;
-		}
+	/*
+	 * example for the adjacency function
+	 */
+	private double quickNDirty(int win, int curr, int time){
+		double dist =topo.dist(win,curr);
+		if(dist ==0) return 1;
+		if(dist== 1) return 0.5;
+		if (dist ==2) return 0.25;
 		return 0;
 	}
 }

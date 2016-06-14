@@ -3,8 +3,8 @@ package selfOrganizingMap;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.jfree.chart.ChartPanel;
@@ -48,8 +48,6 @@ public class Main {
 				// initialise the axes
 		NumberAxis x1 = new NumberAxis("x");
 		NumberAxis y1 = new NumberAxis("y");
-		NumberAxis x2 = new NumberAxis("x");
-		NumberAxis y2 = new NumberAxis("y");
 		
 				//select the render methods
 		XYDotRenderer dotrender = new XYDotRenderer();
@@ -93,14 +91,16 @@ public class Main {
 		
 		//Generate Data
 			//size of the data
-		int sizeD = 2001;
+		int sizeD = 1001;
 			// initialise collection
 		Collection <double []> data = new ArrayList<double []>(sizeD);
 			// find a way to compute the normal distribution
 			//add forall u the the datapoints to the collection
 		double u;
+		double [] init = {0,1};
+		data.add(init);
 		for(int i=1; i<sizeD;i++){
-			u=i*0.01;
+			u=i*0.02;
 			double fst = 2* (1+Math.sqrt(u))*Math.sin(u)+gauss(0,0.01*u);
 			double snd = -(1+Math.sqrt(u))*Math.cos(u)+gauss(0,0.05*u);
 			double [] tmp = {fst,snd};
@@ -117,11 +117,11 @@ public class Main {
 		double learn = 0.5;
 			//take 100 randomly chosen centers from our collection
 			// a treeSet is chosen to sustain the order
-		TreeSet<double []> centers = new TreeSet<double[]>(new Helper());
+		HashSet<double []> centers = new HashSet<double[]>();
 		Random rand = new Random();
 		int tmp;
 		for(int i =0; i<size;i++){
-			tmp = rand.nextInt(sizeD-2);
+			tmp = rand.nextInt(sizeD);
 			double [] cent = ((ArrayList <double []>) data).get(tmp);
 			if(! centers.add(cent) ){
 				i--;
@@ -132,8 +132,8 @@ public class Main {
 		
 		//show Winner
 		int win;
-		for(int i =1; i<20; i++){
-			double [] point = ((ArrayList<double[]>) data).get(i*100);
+		for(int i =100; i<1000; i+=100){
+			double [] point = ((ArrayList<double[]>) data).get(i);
 			win = net.computeWinner(point);
 			double [] neuron = net.getCenter(win);
 			winInpShow.add(point[0],point[1]);
@@ -150,7 +150,7 @@ public class Main {
 		
 		//train SOM
 		
-		for(int i=0; i<2000; i++) net.learn(data);
+		for(int i=0; i<20; i++) net.learn(data);
 		
 		try{
 			Thread.sleep(1250);
