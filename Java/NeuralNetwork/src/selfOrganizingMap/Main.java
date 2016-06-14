@@ -30,6 +30,7 @@ public class Main {
 		XYSeries netShow = new XYSeries("SOM");
 		XYSeries winInpShow = new XYSeries("Inputpunkt");
 		XYSeries winNeuShow	= new XYSeries("Winner-Neuron");
+		XYSeries learnShow = new XYSeries("trainiertes SOM");
 		
 			//collect the series in collections
 		XYSeriesCollection colldata = new XYSeriesCollection();
@@ -37,6 +38,7 @@ public class Main {
 		
 		XYSeriesCollection collnet = new XYSeriesCollection();
 		collnet.addSeries(netShow);
+		collnet.addSeries(learnShow);
 		
 		XYSeriesCollection collwin = new XYSeriesCollection();
 		collwin.addSeries(winInpShow);
@@ -68,8 +70,6 @@ public class Main {
 		plot.setRenderer(0, dotrender);
 				//plot for the SOM
 		plot.setDataset(1, collnet);
-		//plot.setDomainAxis(1, x2);
-		//plot.setRangeAxis(1, y2);
 		plot.setRenderer(1,linerender);
 				//the plot for the winnerneurons
 		plot.setDataset(2, collwin);
@@ -92,11 +92,15 @@ public class Main {
 		
 		
 		//Generate Data
+			//size of the data
+		int sizeD = 2001;
 			// initialise collection
-		Collection <double []> data = new ArrayList<double []>(2001);
+		Collection <double []> data = new ArrayList<double []>(sizeD);
 			// find a way to compute the normal distribution
 			//add forall u the the datapoints to the collection
-		for(int u=0; u<2001;u++){
+		double u;
+		for(int i=1; i<sizeD;i++){
+			u=i*0.01;
 			double fst = 2* (1+Math.sqrt(u))*Math.sin(u)+gauss(0,0.01*u);
 			double snd = -(1+Math.sqrt(u))*Math.cos(u)+gauss(0,0.05*u);
 			double [] tmp = {fst,snd};
@@ -108,22 +112,23 @@ public class Main {
 		frame1.setVisible(true);
 		
 		//initialise SOM adn show it
-			// set the size of the SOM
+			// set the size and learningrate of the SOM
 		int size = 100;
+		double learn = 0.5;
 			//take 100 randomly chosen centers from our collection
 			// a treeSet is chosen to sustain the order
 		TreeSet<double []> centers = new TreeSet<double[]>(new Helper());
 		Random rand = new Random();
 		int tmp;
 		for(int i =0; i<size;i++){
-			tmp = rand.nextInt(2001);
+			tmp = rand.nextInt(sizeD-2);
 			double [] cent = ((ArrayList <double []>) data).get(tmp);
 			if(! centers.add(cent) ){
 				i--;
 			};
 			netShow.add(cent[0], cent[1]);
 		}
-		SOM net = new SOM(2,size,new EuclidsDistance(),new OneDimNonCyclic(), centers);
+		SOM net = new SOM(2,size,learn,new EuclidsDistance(),new OneDimNonCyclic(), centers);
 		
 		//show Winner
 		int win;
@@ -133,18 +138,33 @@ public class Main {
 			double [] neuron = net.getCenter(win);
 			winInpShow.add(point[0],point[1]);
 			winNeuShow.add(neuron [0], neuron [1]);
-			try{
+			/*try{
 				Thread.sleep(1250);
 			}
 			catch (InterruptedException e){
 				System.err.println("Thread Suspended:" + e.getMessage());
-			}
+			}*/
 			winInpShow.clear();
 			winNeuShow.clear();
 		}
+		
 		//train SOM
 		
+		for(int i=0; i<2000; i++) net.learn(data);
+		
+		try{
+			Thread.sleep(1250);
+		}
+		catch (InterruptedException e){
+			System.err.println("Thread Suspended:" + e.getMessage());
+		}
+		
 		//show training
+		linerender.setSeriesVisible(0, false);
+		for(int i=0; i<size;i++){
+			double cent [] = net.getCenter(i);
+			learnShow.add(cent[0], cent[1]);
+		}
 		
 	}
 

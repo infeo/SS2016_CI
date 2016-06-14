@@ -14,14 +14,16 @@ public class SOM {
 	private int [] [] adjacency; 
 	private SOMNeuron [] neurons;
 	private int numNeurons;
+	private double learningrate;
 	
 	/*
 	 * unfinished
 	 */
-	public SOM(int dimIn, int numN, Integrate inte, AdjacencyFunction func){
+	public SOM(int dimIn, int numN, double learn, Integrate inte, AdjacencyFunction func){
 		dimInput = dimIn;
 		dimSOM = func.getDimension();
 		numNeurons = numN;
+		learningrate =learn;
 		//init SOMNeurons
 		neurons = new SOMNeuron [numN];
 		adjacency = new int [numN] [dimSOM];
@@ -36,14 +38,16 @@ public class SOM {
 	 * Initialise the Self-Organizing-Map with the chosen centers. The order of the Neurons is determined by the iterator of the Collection
 	 * @param dimIn the Dimension of the Inputspace
 	 * @param numN Number of Neurons ins the SOM
+	 * @param learn LearningRate of the net (currently a constant)
 	 * @param inte The Distance function/norm ||.|| (how similar are the input vector and the center of the current neuron) 
 	 * @param func The Adjacencey Function-Object, which defines the SOM-Dimension, the count of Neighbours of each neuron and compute those neighbours
 	 * @param centers The predefined centers of the neurons. Note, that the iterators of the collections defines the order of Neurons in the Inputspace
 	 */
-	public SOM(int dimIn, int numN, Integrate inte, AdjacencyFunction func, Collection<double []> centers ){
+	public SOM(int dimIn, int numN, double learn, Integrate inte, AdjacencyFunction func, Collection<double []> centers ){
 		dimInput = dimIn;
 		dimSOM = func.getDimension();
 		numNeurons = numN;
+		learningrate =learn;
 		//init SOMNeurons
 		neurons = new SOMNeuron [numN];
 		adjacency = new int [numN] [dimSOM];
@@ -69,11 +73,37 @@ public class SOM {
 		}
 		return best;
 	}
+	
 	public double[] getCenter(int i){
 		return neurons[i].getWeights();
 	}
 	
 	public int[] getNeighbours(int i){
 		return adjacency[i];
+	}
+	
+	public void learn(Collection <double []> data){
+		Iterator<double[]> it = data.iterator();
+		int winner;
+		while(it.hasNext()){
+			double [] elem = it.next();
+			winner = this.computeWinner(elem);
+			for(int i =0;i<neurons.length;i++){
+				double [] fit = new double [elem.length];
+				double [] cent = neurons[i].getWeights();
+				for(int j=0; j<elem.length;j++){
+					fit[j]=learningrate*(elem[j]-cent[j])*quickNDirty(winner,i);
+				}
+				neurons[i].fitWeights(fit);
+			}
+		}
+	}
+	
+	private double quickNDirty(int win, int curr){
+		if(curr==win) return 1;
+		for(Integer i : adjacency[curr]){
+			if(i==win) return 1;
+		}
+		return 0;
 	}
 }
