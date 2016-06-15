@@ -2,9 +2,11 @@ package neuralnetwork;
 
 import org.jfree.chart.plot.*;
 import org.jfree.chart.axis.*;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.*;
 import org.jfree.chart.*;
 import org.jfree.ui.ApplicationFrame;
+import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.xy.*;
 /**
  *
@@ -86,6 +88,27 @@ public class Demo_JFreeChart {
         frame4.setContentPane(chartPanel4);
         frame4.pack();
         frame4.setVisible(true);
+        
+//------------------------------------------------------
+        ApplicationFrame frame5 = new ApplicationFrame("Test");
+		DefaultKeyedValues2DDataset test = new DefaultKeyedValues2DDataset();
+		CategoryAxis testx = new CategoryAxis("x");
+		ValueAxis testy = new NumberAxis("y");
+		LineAndShapeRenderer testrend = new LineAndShapeRenderer();
+		CategoryPlot plot5 = new CategoryPlot(test,testx,testy,testrend);
+		
+		test.addValue( (Number) 1.0, 0, 0);
+		test.addValue( (Number) 1.0, 0, 1);
+		test.addValue( (Number) 1.0, 0, 2);
+		test.addValue( (Number) 2.0, 0, 1);
+        JFreeChart chart5 = new JFreeChart(plot5);
+
+
+        ChartPanel chartPanel5 = new ChartPanel(chart5);
+        frame5.setContentPane(chartPanel5);
+        frame5.pack();
+        frame5.setVisible(true);
+        
 
 
     }

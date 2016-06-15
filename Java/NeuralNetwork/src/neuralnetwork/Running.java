@@ -79,7 +79,6 @@ public class Running {
 		// generate testdata
 		Collection<Tuple<double[], double[]>> testdata = new ArrayList<Tuple<double[], double[]>>();
 		double x, fx;
-		double[] in = new double[1];
 
 		for (int i = 0; i < 1001; i++) {
 			x = ThreadLocalRandom.current().nextDouble(-10, 10);

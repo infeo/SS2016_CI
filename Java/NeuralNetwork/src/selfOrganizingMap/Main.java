@@ -1,6 +1,7 @@
 package selfOrganizingMap;
 
 import java.awt.Color;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,11 +10,16 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
@@ -22,15 +28,15 @@ import basics.EuclidsDistance;
 
 public class Main {
 
-	public static void main(String [] args){
+	public static void main(String [] args){	
 		//initialise charts
 		// A frame contains a panel, which contains a chart. a chart contains a plot. a plot has a Series-Collection, two axes and a rendermethod. a Series collection has diffrent series.
 			//make data Series
 		XYSeries dataShow = new XYSeries("Datenpunkte");
-		XYSeries netShow = new XYSeries("SOM");
+		XYSeries netShow = new XYSeries("SOM",false);
 		XYSeries winInpShow = new XYSeries("Inputpunkt");
 		XYSeries winNeuShow	= new XYSeries("Winner-Neuron");
-		XYSeries learnShow = new XYSeries("trainiertes SOM");
+		XYSeries learnShow = new XYSeries("trainiertes SOM",false);
 		
 			//collect the series in collections
 		XYSeriesCollection colldata = new XYSeriesCollection();
@@ -54,8 +60,8 @@ public class Main {
 		dotrender.setDotHeight(2);
 		dotrender.setDotWidth(2);
 		XYDotRenderer dotrender2 = new XYDotRenderer();
-		dotrender2.setDotHeight(4);
-		dotrender2.setDotWidth(4);
+		dotrender2.setDotHeight(5);
+		dotrender2.setDotWidth(5);
 		XYLineAndShapeRenderer linerender = new XYLineAndShapeRenderer();
 		linerender.setBaseShapesVisible(false);
 
@@ -75,7 +81,6 @@ public class Main {
 		
 		plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 		plot.setBackgroundPaint(new Color(220,220,225));
-		
 		
 				//make the charts
 		JFreeChart chart1 = new JFreeChart(plot);
@@ -117,20 +122,21 @@ public class Main {
 		double learn = 0.5;
 			//take 100 randomly chosen centers from our collection
 			// a treeSet is chosen to sustain the order
-		HashSet<double []> centers = new HashSet<double[]>();
-		Random rand = new Random();
+		Collection<double []> centers = new HashSet<double[]>();
+		Random rand = new Random(LocalTime.now().getNano());
 		int tmp;
 		for(int i =0; i<size;i++){
 			tmp = rand.nextInt(sizeD);
 			double [] cent = ((ArrayList <double []>) data).get(tmp);
 			if(! centers.add(cent) ){
 				i--;
-			};
+			}
 			netShow.add(cent[0], cent[1]);
+			
 		}
 		SOM net = new SOM(2,size,learn,new EuclidsDistance(),new OneDimNonCyclic(), centers);
 		
-		//show Winner
+		//show Winners
 		int win;
 		for(int i =100; i<1000; i+=100){
 			double [] point = ((ArrayList<double[]>) data).get(i);
@@ -138,22 +144,22 @@ public class Main {
 			double [] neuron = net.getCenter(win);
 			winInpShow.add(point[0],point[1]);
 			winNeuShow.add(neuron [0], neuron [1]);
-			/*try{
+			try{
 				Thread.sleep(1250);
 			}
 			catch (InterruptedException e){
 				System.err.println("Thread Suspended:" + e.getMessage());
-			}*/
+			}
 			winInpShow.clear();
 			winNeuShow.clear();
 		}
 		
 		//train SOM
 		
-		for(int i=0; i<20; i++) net.learn(data);
+		for(int i=0; i<50; i++) net.learn(data);
 		
 		try{
-			Thread.sleep(1250);
+			Thread.sleep(1500);
 		}
 		catch (InterruptedException e){
 			System.err.println("Thread Suspended:" + e.getMessage());
