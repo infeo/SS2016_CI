@@ -134,7 +134,7 @@ public class Main {
 			netShow.add(cent[0], cent[1]);
 			
 		}
-		SOM net = new SOM(2,size,learn,new EuclidsDistance(),new OneDimNonCyclic(), centers);
+		SOM net = new SOM(2, size, learn, new EuclidsDistance(), new OneDimNonCyclic(), centers);
 		
 		//show Winners
 		int win;
