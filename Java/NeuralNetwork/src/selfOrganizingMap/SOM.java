@@ -89,7 +89,7 @@ public class SOM {
 		return neurons[i].getWeights();
 	}
 
-	public void learn(Collection<double[]> data) {
+	public void learn(Collection<double[]> data, int cycle) {
 		Iterator<double[]> it = data.iterator();
 		int winner;
 		while (it.hasNext()) {
@@ -99,7 +99,7 @@ public class SOM {
 				double[] fit = new double[elem.length];
 				double[] cent = neurons[i].getWeights();
 				for (int j = 0; j < elem.length; j++) {
-					fit[j] = learningrate * (elem[j] - cent[j]) * quickNDirty(winner, i, 0);
+					fit[j] = learningrate * (elem[j] - cent[j]) * quickNDirty(winner, i, cycle);
 				}
 				neurons[i].fitWeights(fit);
 			}

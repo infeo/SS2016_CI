@@ -119,7 +119,7 @@ public class Main {
 		//initialise SOM adn show it
 			// set the size and learningrate of the SOM
 		int size = 100;
-		double learn = 0.5;
+		double learn = 0.05;
 			//take 100 randomly chosen centers from our collection
 			// a treeSet is chosen to sustain the order
 		Collection<double []> centers = new HashSet<double[]>();
@@ -156,7 +156,7 @@ public class Main {
 		
 		//train SOM
 		
-		for(int i=0; i<20; i++) net.learn(data);
+		for(int i=0; i<2000; i++) net.learn(data, i);
 		
 		try{
 			Thread.sleep(1500);
