@@ -156,7 +156,7 @@ public class Main {
 		
 		//train SOM
 		
-		for(int i=0; i<50; i++) net.learn(data);
+		for(int i=0; i<20; i++) net.learn(data);
 		
 		try{
 			Thread.sleep(1500);
