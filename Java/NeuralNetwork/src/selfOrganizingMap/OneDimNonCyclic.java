@@ -2,11 +2,11 @@ package selfOrganizingMap;
 
 public class OneDimNonCyclic implements TopologyFunction {
 
-	public double dist(int winner, int curr){
-		return Math.abs(curr-winner);
+	public double dist(int winner, int curr) {
+		return Math.abs(curr - winner);
 	}
-	
-	public int getDimension(){
+
+	public int getDimension() {
 		return 1;
 	}
 
