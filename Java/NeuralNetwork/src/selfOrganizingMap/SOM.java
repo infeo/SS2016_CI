@@ -99,7 +99,7 @@ public class SOM {
 				double[] fit = new double[elem.length];
 				double[] cent = neurons[i].getWeights();
 				for (int j = 0; j < elem.length; j++) {
-					fit[j] = learningrate * (elem[j] - cent[j]) * quickNDirty(winner, i, cycle);
+					fit[j] = learningrate * (elem[j] - cent[j]) * quickNDirty2(winner, i, cycle);
 				}
 				neurons[i].fitWeights(fit);
 			}
@@ -131,6 +131,7 @@ public class SOM {
 		double decrease =((0.5-Math.log(1))/Math.log(cut+1))*Math.log(time+1)-Math.log(1);
 		if (dist == 0)
 			return 1;
+		if(dist > 5) return 0;
 		res=(1/Math.pow(2, dist))-decrease;
 		if(res>=0) return res;
 		return 0;
