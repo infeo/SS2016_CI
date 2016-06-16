@@ -71,7 +71,7 @@ public class SOM {
 	}
 
 	public int computeWinner(double[] inp) {
-		double minDist = Double.MAX_VALUE;
+		double minDist = Double.POSITIVE_INFINITY;
 		double currDist;
 		int best = -1;
 		for (int i = 0; i < neurons.length; i++) {
@@ -107,16 +107,33 @@ public class SOM {
 	}
 
 	/*
-	 * example for the adjacency function
+	 * simple example for the adjacency function
 	 */
 	private double quickNDirty(int win, int curr, int time) {
 		double dist = topo.dist(win, curr);
+		double res=0;
+		if (dist ==0) res=1;
+		if (dist == 1) res =0.5;
+		if (dist == 2) res =0.25;
+		if	(dist ==3) res =0.125;
+		return res;
+		
+	}
+	
+	/*
+	 * more elaborated
+	 */
+	private double quickNDirty2(int win, int curr, int time) {
+		double dist = topo.dist(win, curr);
+		double res=0;
+
+		double cut=7000; // number of iteration, where the adjacency does not matter anymore
+		double decrease =((0.5-Math.log(1))/Math.log(cut+1))*Math.log(time+1)-Math.log(1);
 		if (dist == 0)
 			return 1;
-		if (dist == 1)
-			return 0.5;
-		if (dist == 2)
-			return 0.25;
+		res=(1/Math.pow(2, dist))-decrease;
+		if(res>=0) return res;
 		return 0;
 	}
+	
 }
