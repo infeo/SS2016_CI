@@ -113,8 +113,12 @@ public class SOM {
 		double dist = topo.dist(win, curr);
 		if (dist == 0)
 			return 1;
+		if (dist == 1 && time > 20)
+			return Math.exp(-1 / (2*(time*time)));
 		if (dist == 1)
-			return 0.5;
+			return 1;
+		if (dist == 2 && time > 0)
+			return 0.25 * Math.exp(-1 /(2*(time*time)));
 		if (dist == 2)
 			return 0.25;
 		return 0;
