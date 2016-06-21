@@ -13,13 +13,14 @@ import org.jfree.ui.ApplicationFrame;
 import basics.Integrate;
 import basics.Linear;
 import basics.Transfer;
+import basics.Tuple;
 
 import org.jfree.data.xy.*;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.lang.Math;
 
-public class Running {
+public class Main_Test {
 
 	/*
 	 * with help of blablabla

@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import basics.Integrate;
 import basics.Transfer;
+import basics.Tuple;
 
 
 public class RecurrentNN {

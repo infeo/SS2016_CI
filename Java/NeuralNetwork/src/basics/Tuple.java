@@ -1,4 +1,4 @@
-package neuralnetwork;
+package basics;
 
 public class Tuple<X, Y> {
 

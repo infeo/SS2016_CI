@@ -21,7 +21,7 @@ import org.jfree.ui.ApplicationFrame;
 
 import basics.EuclidsDistance;
 
-public class Main {
+public class Main_Test {
 
 	public static void main(String[] args) {
 		// initialise charts
