@@ -12,20 +12,22 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 
+import basics.PointwiseDistance;
+
 public class Main_Test {
 
 	public static void main(String[] args) {
 		//graphics
 		XYSeries showFx = new XYSeries("f(x)",true);
 		XYSeries showGx = new XYSeries("g(x)",true);
-		XYSeries showBest = new XYSeries("Ergebnis von RandomSearch",true);
+		XYSeries showBest = new XYSeries("Beste Approximation",true);
 		
 		XYSeriesCollection collFx = new XYSeriesCollection();
 		collFx.addSeries(showFx);
-		collFx.addSeries(showBest);
 		
 		XYSeriesCollection collGx = new XYSeriesCollection();
 		collGx.addSeries(showGx);
+		collGx.addSeries(showBest);
 
 		NumberAxis x1 = new NumberAxis("x");
 		NumberAxis y1 = new NumberAxis("Function Output");
@@ -60,6 +62,7 @@ public class Main_Test {
 		double [] dataX = new double[1001];
 		double [] dataFx = new double[1001];
 		double [] dataGx = new double[approx];
+		double [] aim = new double[approx];
 		double x, fx, gx;
 		double err =0;
 		for(int i=0;i<datasize;i++){
@@ -68,6 +71,7 @@ public class Main_Test {
 			if(x-Math.floor(x)==0){
 				gx = ThreadLocalRandom.current().nextDouble();
 				dataGx[(int)x + intervalsize/2]=gx;
+				aim[(int)x + intervalsize/2]=fx;
 				showGx.add(x, gx);
 				err +=Math.abs(fx-gx);
 			}
@@ -81,6 +85,13 @@ public class Main_Test {
 		frame1.setVisible(true);
 		
 		
+		Evo strategy = new Evo(approx,100,10,0.02,10, new PointwiseDistance(aim));
+		strategy.adoptAdaptDevelop(100000);
+		double [] result = strategy.getBest();
+		
+		for(int i=0;i<approx;i++){
+			showBest.add(i-intervalsize/2, result[i]);
+		}
 
 	}
 
