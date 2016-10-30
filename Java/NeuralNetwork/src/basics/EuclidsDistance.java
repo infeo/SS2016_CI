@@ -1,5 +1,7 @@
 package basics;
 
+import functions.Integrate;
+
 public class EuclidsDistance implements Integrate {
 
 	public double integrate(double[] val, double[] weights) {

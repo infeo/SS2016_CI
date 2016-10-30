@@ -5,15 +5,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import basics.Integrate;
-import basics.Transfer;
 import basics.Tuple;
+import deprecated.Cell;
+import functions.Integrate;
+import functions.Transfer;
 
 
 public class RecurrentNN {
 
 		private Cell[][] network;
-		private int[] dimension;
+		private int[] dimensions;
 		private double[][] delta;
 		private double[][] cellout;
 		//indicates wich layer is (complete) recurrent
@@ -26,7 +27,7 @@ public class RecurrentNN {
 			network = new Cell[layers][depth];
 			cellout = new double[layers][depth];
 			delta = new double[layers][depth];
-			dimension = Arrays.copyOf(dim, layers);
+			dimensions = Arrays.copyOf(dim, layers);
 			recurrent = Arrays.copyOf(rec,layers);
 			learningrate = rate;
 			maxdepth = depth;
@@ -37,9 +38,9 @@ public class RecurrentNN {
 		 * Recurrent-safe: YES		 
 		 */
 		public void setLayer(int dim, int layer, Integrate i, Transfer t) {
-			for (int k = 0; k < dimension[layer]; k++) {
+			for (int k = 0; k < dimensions[layer]; k++) {
 				if(recurrent[layer]){
-					network[layer][k] = new Cell(t,i,dim+dimension[layer]);
+					network[layer][k] = new Cell(t,i,dim+dimensions[layer]);
 				}
 				else{
 					network[layer][k] = new Cell(t, i, dim);
@@ -67,7 +68,7 @@ public class RecurrentNN {
 			double[] cellin = Arrays.copyOf(realinput, 2*maxdepth);
 			// double [] cellout = new double [network [0].length];
 			for (int i = 0; i < network.length; i++) {
-				int size = dimension[i];
+				int size = dimensions[i];
 				for (int j = 0; j < size; j++) {
 					if(recurrent[i]){
 						//add the last output to the input
@@ -89,10 +90,10 @@ public class RecurrentNN {
 			double[] start = Arrays.copyOf(t.getFst(), t.getFst().length);
 			double grad;
 			double tmp;
-			int last = dimension.length - 1;
+			int last = dimensions.length - 1;
 			Cell curr;
 			// change the weights of the output layer
-			for (int i = 0; i < dimension[last]; i++) {
+			for (int i = 0; i < dimensions[last]; i++) {
 				curr = network[last][i];
 				delta[last][i] = curr.getDerivatedVal() * (aim[i] - cellout[last][i]);
 				// fit the bias
@@ -107,13 +108,13 @@ public class RecurrentNN {
 
 			// change the weights of the hidden layers
 			// select layer
-			for (int i = dimension.length - 2; i > 0; i--) {
+			for (int i = dimensions.length - 2; i > 0; i--) {
 				// select cell
-				for (int j = 0; j < dimension[i]; j++) {
+				for (int j = 0; j < dimensions[i]; j++) {
 					curr = network[i][j];
 					tmp = 0;
 					// compute delta
-					for (int k = 0; k < dimension[i + 1]; k++)
+					for (int k = 0; k < dimensions[i + 1]; k++)
 						tmp += delta[i + 1][k] * ((network[i + 1][k].getWeights())[j]);
 					delta[i][j] = curr.getDerivatedVal() * tmp;
 					// fit the bias
@@ -128,11 +129,11 @@ public class RecurrentNN {
 			}
 
 			// change the weights of the input layer
-			for (int j = 0; j < dimension[0]; j++) {
+			for (int j = 0; j < dimensions[0]; j++) {
 				curr = network[0][j];
 				tmp = 0;
 				// compute delta
-				for (int k = 0; k < dimension[1]; k++)
+				for (int k = 0; k < dimensions[1]; k++)
 					tmp += delta[1][k] * ((network[1][k].getWeights())[j]);
 				delta[0][j] = curr.getDerivatedVal() * tmp;
 				// fit the bias
@@ -151,8 +152,8 @@ public class RecurrentNN {
 			Cell curr;
 			double grad;
 			double tmp;
-			if (layer == dimension.length - 1) {
-				for (int i = 0; i < dimension[layer]; i++) {
+			if (layer == dimensions.length - 1) {
+				for (int i = 0; i < dimensions[layer]; i++) {
 					// select cell
 					curr = network[layer][i];
 					// compute delta
@@ -167,11 +168,11 @@ public class RecurrentNN {
 					}
 				}
 			} else if (layer == 0) {
-				for (int j = 0; j < dimension[0]; j++) {
+				for (int j = 0; j < dimensions[0]; j++) {
 					curr = network[0][j];
 					tmp = 0;
 					// compute delta
-					for (int k = 0; k < dimension[1]; k++)
+					for (int k = 0; k < dimensions[1]; k++)
 						tmp += delta[1][k] * ((network[1][k].getWeights())[j]);
 					delta[0][j] = curr.getDerivatedVal() * tmp;
 					grad = learningrate * delta[0][j];
@@ -183,11 +184,11 @@ public class RecurrentNN {
 					}
 				}
 			} else {
-				for (int j = 0; j < dimension[layer]; j++) {
+				for (int j = 0; j < dimensions[layer]; j++) {
 					curr = network[layer][j];
 					tmp = 0;
 					// compute delta
-					for (int k = 0; k < dimension[layer + 1]; k++)
+					for (int k = 0; k < dimensions[layer + 1]; k++)
 						tmp += delta[layer + 1][k] * ((network[layer + 1][k].getWeights())[j]);
 					delta[layer][j] = curr.getDerivatedVal() * tmp;
 					// bias
@@ -219,10 +220,10 @@ public class RecurrentNN {
 
 		public double measureError(Tuple<double[], double[]> t) {
 			propagate(t.getFst());
-			int last = dimension.length - 1;
+			int last = dimensions.length - 1;
 			double err = 0;
 			double[] should = t.getSnd();
-			for (int i = 0; i < dimension[last]; i++) {
+			for (int i = 0; i < dimensions[last]; i++) {
 				err += Math.pow((should[i] - cellout[last][i]), 2);
 			}
 			return err;
@@ -230,7 +231,7 @@ public class RecurrentNN {
 
 		public double[] getResult() {
 			int tmp = cellout.length - 1;
-			double[] res = Arrays.copyOf(cellout[tmp], dimension[tmp]);
+			double[] res = Arrays.copyOf(cellout[tmp], dimensions[tmp]);
 			return res;
 		}
 

@@ -1,4 +1,4 @@
-package basics;
+package functions;
 
 public interface Transfer {
 	public double transit(double val);

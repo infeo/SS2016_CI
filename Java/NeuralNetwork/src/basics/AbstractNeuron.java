@@ -1,5 +1,7 @@
 package basics;
 
+import functions.Integrate;
+import functions.Transfer;
 
 public abstract class AbstractNeuron {
 	protected int dimInput;

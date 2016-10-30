@@ -1,6 +1,8 @@
 package basics;
 
-public class Tuple<X, Y> {
+import java.util.Map.Entry;
+
+public class Tuple<X, Y> implements Entry<X,Y> {
 
 	X fst;
 	Y snd;
@@ -24,6 +26,23 @@ public class Tuple<X, Y> {
 
 	public void setSnd(Y snd) {
 		this.snd = snd;
+	}
+
+	@Override
+	public X getKey() {
+		return getFst();
+	}
+
+	@Override
+	public Y getValue() {
+		return getSnd();
+	}
+
+	@Override
+	public Y setValue(Y value) {
+		Y tmp = getSnd();
+		setSnd(value);
+		return tmp;
 	}
 
 }

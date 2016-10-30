@@ -1,26 +1,29 @@
-package neuralnetwork;
+package testing;
 
-import org.jfree.chart.plot.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.renderer.xy.*;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
 
-import org.jfree.chart.*;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 
-import basics.Integrate;
-import basics.Linear;
-import basics.Transfer;
 import basics.Tuple;
+import deprecated.NeuralNetwork;
+import functions.Fermi;
+import functions.Integrate;
+import functions.Linear;
+import functions.Sum;
+import functions.Transfer;
 
-import org.jfree.data.xy.*;
-import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
-import java.lang.Math;
-
-public class Main_Test {
+public class TestDeprecated {
 
 	/*
 	 * with help of blablabla
@@ -125,7 +128,7 @@ public class Main_Test {
 		compare(neuralnet, testdata);
 */
 		// for testing, train the whole net
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			neuron.learn(testdata);
 			error1.add((double) i, neuron.measureMeanError(testdata));
 		}

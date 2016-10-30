@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Collection;
 
-import basics.Integrate;
-import basics.Linear;
+import functions.Integrate;
+import functions.Linear;
 
 public class SOM {
 

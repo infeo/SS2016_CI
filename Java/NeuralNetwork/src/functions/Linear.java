@@ -1,4 +1,4 @@
-package basics;
+package functions;
 
 public class Linear implements Transfer {
 

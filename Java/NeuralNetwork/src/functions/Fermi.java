@@ -1,8 +1,6 @@
-package neuralnetwork;
+package functions;
 
 import java.lang.Math;
-
-import basics.Transfer;
 
 public class Fermi implements Transfer {
 

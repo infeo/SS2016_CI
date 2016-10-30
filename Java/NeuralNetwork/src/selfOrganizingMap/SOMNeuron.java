@@ -3,8 +3,8 @@ package selfOrganizingMap;
 import java.util.Arrays;
 
 import basics.AbstractNeuron;
-import basics.Integrate;
-import basics.Transfer;
+import functions.Integrate;
+import functions.Transfer;
 
 public class SOMNeuron extends AbstractNeuron {
 

@@ -1,6 +1,4 @@
-package neuralnetwork;
-
-import basics.Integrate;
+package functions;
 
 public class Sum implements Integrate {
 

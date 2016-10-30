@@ -1,10 +1,8 @@
-package neuralnetwork;
+package deprecated;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 import functions.Integrate;
-import functions.Linear;
-import functions.Sum;
 import functions.Transfer;
 
 public class Cell {
@@ -14,14 +12,6 @@ public class Cell {
 	private double derivatedval;
 	private double [] weights;
 	
-	
-	public Cell(){
-		trans = new Linear();
-		inte = new Sum();
-		weights = new double[2];
-		weights[0]= 0;
-		weights[1]=1;
-	}
 	
 	public Cell (Transfer t, Integrate i, int dimension ){
 		trans =t;
@@ -40,15 +30,8 @@ public class Cell {
 		return trans.transit(tmp);
 	}
 	
-//	public void fit(int pos, double val){
-//		weights [pos] += val;
-//	}
-	
-	
-	public void fitWeights(double [] val){
-		for(int i=0; i<weights.length; i++){
-			weights[i] += val[i];
-		}
+	public void fit(int pos, double val){
+		weights [pos] += val;
 	}
 	
 	public double getDerivatedVal(){
