@@ -1,4 +1,4 @@
-package neuralnetwork;
+package basics;
 
 import org.jfree.chart.plot.*;
 import org.jfree.chart.axis.*;

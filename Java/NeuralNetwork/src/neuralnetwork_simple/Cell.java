@@ -1,4 +1,4 @@
-package neuralnetwork;
+package neuralnetwork_simple;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,7 +14,6 @@ public class Cell {
 	private double derivatedval;
 	private double [] weights;
 	
-	
 	public Cell(){
 		trans = new Linear();
 		inte = new Sum();
@@ -23,15 +22,13 @@ public class Cell {
 		weights[1]=1;
 	}
 	
-	public Cell (Transfer t, Integrate i, int dimension ){
+	public Cell (Transfer t, Integrate i, int dimension, double range ){
 		trans =t;
 		inte = i;
 		weights = new double [dimension+1];
 		weights [0]=1; //Bias
-		for (int j=1; j<= dimension;j++){
-			weights [j]=ThreadLocalRandom.current().nextDouble(-0.5, 0.5);
-		}
-		
+		weights = ThreadLocalRandom.current().doubles(dimension+1,-range,range).toArray();
+		weights[0]=1;
 	}
 	
 	public double computeOutput (double [] input){

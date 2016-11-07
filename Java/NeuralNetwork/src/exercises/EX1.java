@@ -21,7 +21,7 @@ public class EX1 {
 		String path = args[0];
 		Double learningrate = Double.valueOf(args[1]);
 		Integer iterations = Integer.valueOf(args[2]);
-		Collection<? extends Entry<double[],double[]>> data = DATParser.read(path);
+		Collection<? extends Entry<double[],double[]>> data = DATParser.readSimple(path);
 		
 		// generate Network
 		int[] dim = {2};

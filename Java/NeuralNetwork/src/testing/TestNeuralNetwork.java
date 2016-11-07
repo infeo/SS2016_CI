@@ -22,7 +22,7 @@ import functions.Integrate;
 import functions.Linear;
 import functions.Sum;
 import functions.Transfer;
-import neuralnetwork.NeuralNetwork;
+import nn_elaborated.NeuralNetwork;
 
 public class TestNeuralNetwork {
 
@@ -34,7 +34,7 @@ public class TestNeuralNetwork {
 	private static int[] dim = { 1, 10, 1 };
 	private static int numHidden = 1;
 	private static int maxDepth = 10;
-	private static double learningrate = 0.00005;
+	private static double [] learningrates = {0, 0.00005, 0.00005};
 	private static int learnIterations = 10000;
 		
 	public static void main(String[] args) {
@@ -106,13 +106,13 @@ public class TestNeuralNetwork {
 
 		// generate Network
 		
-		neuralnet = new NeuralNetwork(dim, numHidden, maxDepth, learningrate);
+		neuralnet = new NeuralNetwork(dim, numHidden, maxDepth, learningrates, System.nanoTime());
 		Transfer t1 = new Fermi();
 		Transfer t2 = new Linear();
 		Integrate inte = new Sum();
-		neuralnet.setLayer(0, inte, t2);
-		neuralnet.setLayer(1, inte, t1);
-		neuralnet.setLayer(2, inte, t2);
+		neuralnet.setLayer(0, inte, t2, 0.5);
+		neuralnet.setLayer(1, inte, t1, 0.5);
+		neuralnet.setLayer(2, inte, t2, 0.5);
 
 
 		// show the untrained network

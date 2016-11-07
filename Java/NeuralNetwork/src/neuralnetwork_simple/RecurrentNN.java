@@ -1,4 +1,4 @@
-package neuralnetwork;
+package neuralnetwork_simple;
 
 
 import java.util.Arrays;
