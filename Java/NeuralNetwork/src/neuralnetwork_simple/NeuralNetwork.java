@@ -1,10 +1,11 @@
-package neuralnetwork;
+package neuralnetwork_simple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import functions.Integrate;
 import functions.Transfer;
@@ -44,15 +45,21 @@ public class NeuralNetwork {
 	 * the layer, which contains the maximum number of neurons
 	 */
 	private int maxdepth;
-
+	
+	/**
+	 * the seed for the PRNG
+	 */
+	private long seed;
+	
 	/**
 	 * initialises a neural net
 	 * @param dim array of numbers, which indicate the count of neuron in the corresponding layer. Th first number is the input layer and tha last is the output layer
 	 * @param hiddenlayers a check to note that the dimension vector contains also the input layer.
 	 * @param maxdepth	maximum number of neurons in one layer
 	 * @param learningrate learningrate
+	 * @param seed the seed for the pseudo random number generator
 	 */
-	public NeuralNetwork(int[] dim, int hiddenlayers, int maxdepth, double learningrate) {
+	public NeuralNetwork(int[] dim, int hiddenlayers, int maxdepth, double learningrate, long seed) {
 		int layers = dim.length;
 		if(hiddenlayers != layers-2)
 			throw new IllegalArgumentException("Check of understanding input failed");
@@ -69,18 +76,21 @@ public class NeuralNetwork {
 		dimensions = Arrays.copyOf(dim, layers);
 		this.learningrate = learningrate;
 		this.maxdepth = maxdepth;
+		this.seed =seed;
 	}
 
+	
 	/**
 	 * initializes a layer of the network with the wished neuron
 	 * @param layer the desired layer
 	 * @param i	the integration function of each neuron in the layer
 	 * @param t	the transfer function of each neuron in the layer
+	 * @param range the range to set the weights
 	 * @throws ArrayIndexOutOfBoundsException if the layer is bigger than the size of the neural network
 	 */
 	public void setLayer(int layer, Integrate i, Transfer t) throws ArrayIndexOutOfBoundsException{
 		for (int k = 0; k < dimensions[layer]; k++) {
-			network.get(layer)[k] = layer==0? new Cell() :new Cell(t, i, dimensions[layer-1]);
+			network.get(layer)[k] = layer==0? new Cell() :new Cell(t, i, dimensions[layer-1],seed);
 		}
 	}
 
@@ -253,7 +263,7 @@ public class NeuralNetwork {
 			errsum += measureError(elem);
 		}
 
-		return errsum / (2 * (double) errcount);
+		return errsum / (double) errcount;
 	}
 
 	public double measureError(Entry<double[], double[]> t) {
@@ -265,7 +275,7 @@ public class NeuralNetwork {
 		for (int i = 0; i < dimensions[last]; i++) {
 			err += Math.pow((should[i] - is[i]), 2);
 		}
-		return err;
+		return 0.5*err;
 	}
 
 	public double[] getResult() {
