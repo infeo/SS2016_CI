@@ -12,8 +12,8 @@ import com.google.common.collect.Multiset;
 /**
  * Class implementing the k-means-clustering-algorithm for solving the
  * k-clustering-problem Erweiterungsideen: - Schlechte eingabe mitttels
- * evolutionären algorithmus finden - gültige Instanzen folgendermaßen erzeugen:
- * Setzte zufälligen radius & zentrum. Setzte in diesem eine zufällige anzahl an
+ * evolutionï¿½ren algorithmus finden - gï¿½ltige Instanzen folgendermaï¿½en erzeugen:
+ * Setzte zufï¿½lligen radius & zentrum. Setzte in diesem eine zufï¿½llige anzahl an
  * Punkten. widerhole
  * 
  * @author Armin Schrenk
@@ -218,6 +218,21 @@ public class KMeansPPClusteringSimple {
 
 	public double[][] getCenters() {
 		return centers;
+	}
+	
+	public double[] getRadiants(){
+		double [] radiants = new double [k];
+		for(int i=0; i<k;i++){
+			radiants[i]=0;
+			Multiset<double[]> cluster = clstpoints[i];
+			for(double[] point : cluster){
+				double rad = dist(point,centers[i],false);
+				if(rad> radiants[i]){
+					radiants[i]=rad;
+				}
+			}
+		}
+		return radiants;
 	}
 
 	public Collection<double[]>[] getClstpoints() {

@@ -1,5 +1,6 @@
 package nn_elaborated;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,11 +27,15 @@ public class Cell {
 	public Cell (Transfer t, Integrate i, int dimension, long seed, double range ){
 		trans =t;
 		inte = i;
-		weights = new double [dimension+1];
-		weights [0]=1; //Bias
 		Random rand = new Random(seed);
 		weights = rand.doubles(dimension+1,-range,range).toArray();
 		weights[0]=1;
+	}
+	
+	public Cell(Transfer t, Integrate i, double [] weights){
+		trans =t;
+		inte = i;
+		this.weights = Arrays.copyOf(weights, weights.length);
 	}
 	
 	public double computeOutput (double [] input){

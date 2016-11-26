@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import clustering.KMeansPPClusteringSimple;
+import functions.EuclidDistanceSquared;
 import functions.Fermi;
 import functions.Gaussian;
 import functions.Integrate;
@@ -15,9 +17,10 @@ import functions.Transfer;
 import io.DATParser;
 import io.GNUPlotFile;
 import nn_elaborated.NeuralNetwork;
+import nn_elaborated.RBFNN;
 
 public class EX3 {
-	public static NeuralNetwork nn;
+	public static RBFNN nn;
 	public static int iterations;
 	public static Random rand = new Random(System.nanoTime());
 	
@@ -36,10 +39,8 @@ public class EX3 {
 		ArrayList<? extends Entry<double[],double[]>> traindata = (ArrayList<? extends Entry<double[],double[]>>) DATParser.read(trainpath);
 		ArrayList<? extends Entry<double[],double[]>> testdata = (ArrayList<? extends Entry<double[],double[]>>) DATParser.read(testpath);
 		
-		
 		// generate Network
-		init1();
-		//init2();
+		init1(traindata);
 		
 		System.out.println("the initial Error of the network is: "+nn.measureMeanError(testdata));
 		System.out.println("Learning starts now...");
@@ -55,33 +56,32 @@ public class EX3 {
 	/**
 	 * initializes the neural network with an architecture to accept the training1.dat file
 	 */
-	public static void init1(){
-		int[] dim = {4, 3, 2};
-		nn = new NeuralNetwork(dim, 1, 4, System.nanoTime());
+	public static void init1(ArrayList<? extends Entry<double[],double[]>> input){
+		int RBFLayer = 3;
+		ArrayList<double[]> dataForClustering = new ArrayList<>(input.size());
+		for(Entry<double[],double[]> elem : input){
+			dataForClustering.add(elem.getKey());
+		}
+		
+		KMeansPPClusteringSimple kmc = new KMeansPPClusteringSimple(RBFLayer, dataForClustering);
+		kmc.compute();
+		double [][] weights = kmc.getCenters();
+		double[] radiants = kmc.getRadiants();
+		int[] dim = {4, RBFLayer, 2};
+		nn = new RBFNN(dim, 1, 4, System.nanoTime());
 		Transfer t1 = new Linear();
-		Transfer t2 = new Linear();
+		Transfer [] ts = new Transfer[RBFLayer];
+		for(int i = 0; i<RBFLayer;i++){
+			ts[i]= new Gaussian(radiants[i]);
+		}		
 		Integrate inte1 = new Sum();
-		Integrate inte2 = new Gaussian();
+		Integrate inte2 = new EuclidDistanceSquared();
 		nn.setLayer(0, 0, inte1,t1 , 1);
-		nn.setLayer(1, 0.005, inte, t2, 2.0);
-		nn.setLayer(2, 0.005, inte1, t2, 2.0);
+		nn.setRBFLayer(inte2, ts, weights);
+		nn.setLayer(2, 0.005, inte1, t1, 2.0);
 	}
 	
-	
-	/**
-	 * initializes the neural network with an architecture to accept the training2.dat file
-	 */
-	public static void init2(){
-		int[] dim = {2, 3, 1};
-		nn = new NeuralNetwork(dim, 1, 3, System.nanoTime());
-		Transfer t1 = new Linear();
-		Transfer t2 = new Fermi();
-		Integrate inte = new Sum();
-		nn.setLayer(0, 0, inte,t1 , 1);
-		nn.setLayer(1, 0.005, inte, t2, 2.0);
-		nn.setLayer(2, 0.005, inte, t2, 2.0);
-	}
-	
+		
 	public static ArrayList<Double> learn(Collection<? extends Entry<double[],double[]>> data){
 		ArrayList<Double> errOverTime = new ArrayList<>(iterations*data.size());
 		for(int i=0;i<iterations;i++){

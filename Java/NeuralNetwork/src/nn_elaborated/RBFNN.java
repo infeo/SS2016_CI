@@ -56,10 +56,9 @@ public class RBFNN {
 	 * @param dim array of numbers, which indicate the count of neuron in the corresponding layer. Th first number is the input layer and tha last is the output layer
 	 * @param hiddenlayers a check to note that the dimension vector contains also the input layer.
 	 * @param maxdepth	maximum number of neurons in one layer
-	 * @param learningrates array of learningrates
 	 * @param seed the seed for the pseudo random number generator
 	 */
-	public RBFNN(int[] dim, int hiddenlayers, int maxdepth, double [] learningrates, long seed) {
+	public RBFNN(int[] dim, int hiddenlayers, int maxdepth, long seed) {
 		int layers = dim.length;
 		if(hiddenlayers != layers-2)
 			throw new IllegalArgumentException("Check of understanding input failed");
@@ -74,7 +73,7 @@ public class RBFNN {
 		}
 		
 		dimensions = Arrays.copyOf(dim, layers);
-		this.learningrates = learningrates;
+		this.learningrates = new double[dim.length];
 		this.maxdepth = maxdepth;
 		this.seed =seed;
 	}
@@ -83,14 +82,23 @@ public class RBFNN {
 	/**
 	 * initializes a layer of the network with the wished neuron
 	 * @param layer the desired layer
+	 * @param rate learningrate of this layer
 	 * @param i	the integration function of each neuron in the layer
 	 * @param t	the transfer function of each neuron in the layer
-	 * @param range the range to set the weights
+	 * @param weightRange the range to set the weights
 	 * @throws ArrayIndexOutOfBoundsException if the layer is bigger than the size of the neural network
 	 */
-	public void setLayer(int layer, Integrate i, Transfer t, double range) throws ArrayIndexOutOfBoundsException{
+	public void setLayer(int layer, double rate, Integrate i, Transfer t, double weightRange) throws ArrayIndexOutOfBoundsException{
+		learningrates[layer]=rate;
 		for (int k = 0; k < dimensions[layer]; k++) {
-			network.get(layer)[k] = layer==0? new Cell() :new Cell(t, i, dimensions[layer-1],seed, range);
+			network.get(layer)[k] = layer==0? new Cell() :new Cell(t, i, dimensions[layer-1],seed, weightRange);
+		}
+	}
+	
+	public void setRBFLayer(Integrate i, Transfer [] ts, double[][] centers){
+		learningrates[1]=0;
+		for (int k = 0; k < dimensions[1]; k++) {
+			network.get(1)[k] = new Cell(ts[k], i, centers[k]);
 		}
 	}
 
@@ -165,7 +173,6 @@ public class RBFNN {
 			}
 			currN.fitWeights(fit);
 		}
-
 	}
 
 	
@@ -174,7 +181,6 @@ public class RBFNN {
 		this.backPropagate(p.getValue());
 	}
 	
-
 	public double measureMeanError(Collection<? extends Entry<double[], double[]>> testdata) {
 		double errsum = 0;
 		int errcount = 0;
@@ -206,5 +212,4 @@ public class RBFNN {
 		double[] res = Arrays.copyOf(cellout.get(last), dimensions[last]);
 		return res;
 	}
-
 }
